@@ -1,5 +1,5 @@
 from textnode import TextNode, TextType
-
+from extract_links import split_nodes_images, split_nodes_links
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -34,3 +34,20 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             new_nodes.extend(result_of_recursive_call)
 
     return new_nodes
+
+
+def text_to_textnodes(text):
+    """
+    Converts a raw string of markdown-flavored text into a list of TextNode objects.
+    """
+    # Start with a single text node
+    nodes = [TextNode(text, TextType.TEXT)]
+
+    # Apply splitting functions in sequence
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_images(nodes)
+    nodes = split_nodes_links(nodes)
+
+    return nodes
